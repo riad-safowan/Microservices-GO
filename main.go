@@ -29,7 +29,15 @@ func main() {
 }
 
 //terminal
-//rm -rf .git --- delete git
 // go run main.go --- run the programme
 // contrl + c --- close running programme
 // curl -v -d 'amar sonar bangla'  localhost:9090 --- request with data to the server
+
+//git 
+// rm -rf .git --- delete git
+// git status --- status with current branch 
+// git branch --list --- list of branch
+// git branch newbranchname --- create branch locally
+// git checkout branchname --- switch branch
+// git checkout -b branchname --- create and switch
+
