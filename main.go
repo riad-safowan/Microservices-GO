@@ -40,4 +40,5 @@ func main() {
 // git branch newbranchname --- create branch locally
 // git checkout branchname --- switch branch
 // git checkout -b branchname --- create and switch
+// git push --set-upstream origin branchname --- push with newly created branch
 
