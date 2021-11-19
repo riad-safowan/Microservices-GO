@@ -16,8 +16,8 @@ func NewBye() *Bye{
 
 func (b *Bye) ServeHTTP(rw http.ResponseWriter, r *http.Request){
 
-	for i := 0; i < 100; i++ {
-		time.Sleep(1000)
+	for i := 0; i < 4; i++ {
+		time.Sleep(1000 *time.Millisecond)
 		fmt.Fprintln(rw, "Good Bye from the server")
 	}
 }

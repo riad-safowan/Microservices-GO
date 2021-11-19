@@ -24,8 +24,8 @@ func main() {
 		Addr:         ":9090",
 		Handler:      sm,
 		IdleTimeout:  120 * time.Second,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
 	}
 
 	// http.ListenAndServe(":9090", sm) // starts the server at mensioned port
@@ -51,11 +51,14 @@ func main() {
 //terminal
 // go run main.go --- run the programme
 // contrl + c --- close running programme
+// curl localhost:9090 --- request to the server
+// curl -v localhost:9090 --- request with info
 // curl -v -d 'amar sonar bangla'  localhost:9090 --- request with data to the server
-// curl -v localhost:9090 --- request with data to the server
-// curl localhost:9090 --- request with data to the server
 
 //git
+// git config user.name
+// git config user.email
+// git config --global user.email "mailAddress"
 // git init --- initialize directory to git repository
 // rm -rf .git --- delete git
 // git status --- status with current branch
