@@ -15,10 +15,12 @@ func main() {
 
 	hh := handlers.NewHello(l)
 	bh := handlers.NewBye()
+	ph := handlers.NewProducts(l)
 
 	sm := http.NewServeMux()
 	sm.Handle("/", hh)
 	sm.Handle("/bye", bh)
+	sm.Handle("/products", ph)
 
 	s := &http.Server{ //custom server
 		Addr:         ":9090",
@@ -52,6 +54,7 @@ func main() {
 // go run main.go --- run the programme
 // contrl + c --- close running programme
 // curl localhost:9090 --- request to the server
+// curl localhost:9090 -v -XDELETE --- specific request to the server
 // curl -v localhost:9090 --- request with info
 // curl -v -d 'amar sonar bangla'  localhost:9090 --- request with data to the server
 
