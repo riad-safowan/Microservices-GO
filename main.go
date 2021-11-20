@@ -21,8 +21,9 @@ func main() {
 	sm.Handle("/", hh)
 	sm.Handle("/bye", bh)
 	sm.Handle("/products", ph)
+	sm.Handle("/products/", ph) //for put request
 
-	s := &http.Server{ //custom server
+	s := &http.Server{ // custom server
 		Addr:         ":9090",
 		Handler:      sm,
 		IdleTimeout:  120 * time.Second,
