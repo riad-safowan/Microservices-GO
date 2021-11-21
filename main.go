@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"p1/handlers"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -17,11 +19,25 @@ func main() {
 	bh := handlers.NewBye()
 	ph := handlers.NewProducts(l)
 
-	sm := http.NewServeMux()
-	sm.Handle("/", hh)
+	// sm := http.NewServeMux()
+	sm := mux.NewRouter() // Router witn mux
+
+	sm.Handle("/", hh) // call serveHTTP
 	sm.Handle("/bye", bh)
-	sm.Handle("/products", ph)
-	sm.Handle("/products/", ph) //for put request
+	// sm.Handle("/products", ph)
+	// sm.Handle("/products/", ph) // for put request
+
+	getRouter := sm.Methods("GET").Subrouter()
+	getRouter.HandleFunc("/products", ph.GetProducts) // call direct function instead of  serveHTTP
+	getRouter.HandleFunc("/products/{id:[0-9]+}", ph.GetProductById)
+
+	postRouter := sm.Methods("POST").Subrouter()
+	postRouter.HandleFunc("/products", ph.AddProduct)
+	postRouter.Use(ph.MiddlewareProductValidation)
+
+	putRouter := sm.Methods("PUT").Subrouter()
+	putRouter.HandleFunc("/products/{id:[0-9]+}", ph.UpdateProduct)
+	putRouter.Use(ph.MiddlewareProductValidation)
 
 	s := &http.Server{ // custom server
 		Addr:         ":9090",
@@ -48,7 +64,6 @@ func main() {
 
 	tc, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(tc)
-
 }
 
 //terminal

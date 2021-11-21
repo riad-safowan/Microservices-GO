@@ -24,6 +24,9 @@ type Products []*Product
 func (p Products) ToJson(w io.Writer) error {
 	return json.NewEncoder(w).Encode(p)
 }
+func (p Product) ToJson(w io.Writer) error {
+	return json.NewEncoder(w).Encode(p)
+}
 
 func (p *Product) FromJson(r io.Reader) error {
 	return json.NewDecoder(r).Decode(p)
@@ -42,7 +45,7 @@ func AddProduct(p *Product) {
 	productList = append(productList, p)
 }
 
-func UpdateProduct(id int, p*Product) error {
+func UpdateProduct(id int, p *Product) error {
 	_, pos, err := findProduct(id)
 	if err != nil {
 		return err
@@ -53,6 +56,10 @@ func UpdateProduct(id int, p*Product) error {
 
 	return nil
 }
+func GetProductById(id int) (Product, error) {
+	p, _, e := findProduct(id)
+	return *p, e
+}
 
 func findProduct(id int) (*Product, int, error) {
 	for i, p := range productList {
@@ -60,8 +67,7 @@ func findProduct(id int) (*Product, int, error) {
 			return p, i, nil
 		}
 	}
-
-	return nil, -1, ErrProductNotFound 
+	return nil, -1, ErrProductNotFound
 }
 
 func getNextId() int {
