@@ -6,17 +6,22 @@ import (
 	"io"
 	"log"
 	"time"
+	"github.com/go-playground/validator"
 )
 
 type Product struct {
 	ID          int     `json:"id"`
-	Name        string  `json:"name"`
+	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price"`
+	Price       float32 `json:"price" validate:"gt=0"`
 	SKU         string  `json:"sku"`
 	CreatedOn   string  `json:"-"`
 	UpdatedOn   string  `json:"-"`
 	DeletedOn   string  `json:"deletedOn,omitempty"`
+}
+
+func (p *Product) Validate() error {
+	return validator.New().Struct(p)
 }
 
 type Products []*Product
@@ -56,18 +61,19 @@ func UpdateProduct(id int, p *Product) error {
 
 	return nil
 }
-func GetProductById(id int) (Product, error) {
+func GetProductById(id int) (*Product, error) {
 	p, _, e := findProduct(id)
-	return *p, e
+	return p, e
 }
 
 func findProduct(id int) (*Product, int, error) {
 	for i, p := range productList {
 		if p.ID == id {
+			log.Print("GOT")
 			return p, i, nil
 		}
 	}
-	return nil, -1, ErrProductNotFound
+	return nil, -1, fmt.Errorf("PNF")
 }
 
 func getNextId() int {
@@ -77,7 +83,7 @@ func getNextId() int {
 var ErrProductNotFound = fmt.Errorf("Product not found")
 
 var productList = []*Product{
-	&Product{
+	{
 		ID:          1,
 		Name:        "Latte",
 		Description: "Frothy milky coffee",
@@ -86,7 +92,7 @@ var productList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          2,
 		Name:        "Espresso",
 		Description: "Short and strong coffee without milk",
@@ -95,7 +101,7 @@ var productList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          3,
 		Name:        "Espasedfasewfwaef eaf weresdfgvaersrdfawefso",
 		Description: "Short anergavsdfaertgreaaed strong coffee wittgsergaergraefgashout milk",
@@ -104,7 +110,7 @@ var productList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          4,
 		Name:        "Espresefsadfadersgsrzgvbrafsso",
 		Description: "Short and wertwerfsaeergfaewfastrong coffee without milk",
@@ -113,7 +119,7 @@ var productList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          5,
 		Name:        "Espresso",
 		Description: "Short and strrertong coffee without milk",
@@ -122,7 +128,7 @@ var productList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          6,
 		Name:        "Espresreterterfgergdfreterso",
 		Description: "Short andertgwergarefgergt strong coffee without milk",
@@ -131,7 +137,7 @@ var productList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          7,
 		Name:        "Espresdafsdafsadfsdfsdafsdfasdfsadfsso",
 		Description: "Short asdfsdafsdafadsfand strong coffee without milk",
@@ -140,7 +146,7 @@ var productList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          8,
 		Name:        "Espressfasdfsdafasdfsdafasdo",
 		Description: "Short fasdfsadfsdafsda strong coffee without milk",
@@ -149,7 +155,7 @@ var productList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          9,
 		Name:        "dfgadsfgsdfgdsfgdfs",
 		Description: "Shasdfgasdfgasdgsdf",
@@ -158,7 +164,7 @@ var productList = []*Product{
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
 	},
-	&Product{
+	{
 		ID:          10,
 		Name:        "Espresso",
 		Description: "Short and st-podjfgpiodufhbngpiaudfhgief oiudfgh sidofuhgpidfh gpaedrighj without milk",

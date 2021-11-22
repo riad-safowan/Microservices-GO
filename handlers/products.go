@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"p1/data"
@@ -28,7 +29,7 @@ func (p *Products) GetProducts(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 func (p *Products) GetProductById(rw http.ResponseWriter, r *http.Request) {
-	p.l.Println("Product Page is called")
+	p.l.Println("Get product by ID api called")
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -36,7 +37,6 @@ func (p *Products) GetProductById(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
 		return
 	}
-
 	sp, err := data.GetProductById(id)
 	if err == data.ErrProductNotFound {
 		http.Error(rw, "Product not found", http.StatusNotFound)
@@ -46,10 +46,8 @@ func (p *Products) GetProductById(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Product not found", http.StatusInternalServerError)
 		return
 	}
-
 	err = sp.ToJson(rw)
 	if err != nil {
-		p.l.Println("unable to marshal json")
 		http.Error(rw, "unable to marshal json", http.StatusInternalServerError)
 	}
 }
@@ -80,7 +78,6 @@ func (p *Products) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Product not found", http.StatusInternalServerError)
 		return
 	}
-
 	p.GetProducts(rw, r)
 }
 
@@ -92,6 +89,12 @@ func (p Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 		err := prod.FromJson(r.Body)
 		if err != nil {
 			http.Error(rw, "unable to unmashal json", http.StatusBadRequest)
+			return
+		}
+
+		err = prod.Validate()
+		if err != nil {
+			http.Error(rw, fmt.Sprintf("Invalid Product json %s", err), http.StatusBadRequest)
 			return
 		}
 
