@@ -6,18 +6,17 @@ import (
 	"time"
 )
 
-type Bye struct{
-
+type Bye struct {
 }
 
-func NewBye() *Bye{
+func NewBye() *Bye {
 	return &Bye{}
 }
 
-func (b *Bye) ServeHTTP(rw http.ResponseWriter, r *http.Request){
+func (b *Bye) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 	for i := 0; i < 4; i++ {
-		time.Sleep(100 *time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 		fmt.Fprintln(rw, "Good Bye from the server")
 	}
 }

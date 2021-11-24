@@ -3,10 +3,10 @@ package data
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-playground/validator"
 	"io"
 	"log"
 	"time"
-	"github.com/go-playground/validator"
 )
 
 type Product struct {

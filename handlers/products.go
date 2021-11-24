@@ -26,10 +26,13 @@ func (p *Products) GetProducts(rw http.ResponseWriter, r *http.Request) {
 	err := lp.ToJson(rw)
 	if err != nil {
 		http.Error(rw, "unable to marshal json", http.StatusInternalServerError)
+		return
 	}
+	fmt.Fprint(rw, "Your IP: "+ReadUserIP(r))
 }
+
 func (p *Products) GetProductById(rw http.ResponseWriter, r *http.Request) {
-	p.l.Println("Get product by ID api called")
+	p.l.Println("Product Page is called")
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -37,6 +40,7 @@ func (p *Products) GetProductById(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
 		return
 	}
+
 	sp, err := data.GetProductById(id)
 	if err == data.ErrProductNotFound {
 		http.Error(rw, "Product not found", http.StatusNotFound)
@@ -46,8 +50,10 @@ func (p *Products) GetProductById(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Product not found", http.StatusInternalServerError)
 		return
 	}
+
 	err = sp.ToJson(rw)
 	if err != nil {
+		p.l.Println("unable to marshal json")
 		http.Error(rw, "unable to marshal json", http.StatusInternalServerError)
 	}
 }
@@ -78,6 +84,7 @@ func (p *Products) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Product not found", http.StatusInternalServerError)
 		return
 	}
+
 	p.GetProducts(rw, r)
 }
 
@@ -92,15 +99,21 @@ func (p Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 			return
 		}
 
-		err = prod.Validate()
-		if err != nil {
-			http.Error(rw, fmt.Sprintf("Invalid Product json %s", err), http.StatusBadRequest)
-			return
-		}
-
 		ctx := context.WithValue(r.Context(), KeyProduct{}, prod)
 		req := r.WithContext(ctx)
 
 		next.ServeHTTP(rw, req)
 	})
+}
+
+func ReadUserIP(r *http.Request) string {
+	IPAddress := r.Header.Get("X-Real-Ip")
+	if IPAddress != "" {
+		return "(Real) " + IPAddress
+	}
+	IPAddress = r.Header.Get("X-Forwarded-For")
+	if IPAddress != "" {
+		return "(Forwarded) " + IPAddress
+	}
+	return "(Remote) " + r.RemoteAddr
 }
